@@ -8,6 +8,11 @@ import { AuthProvider, useAuth } from "@/components/AuthContext";
 import { Layout } from "@/components/layout/Layout";
 import { LandingPage } from "@/pages/LandingPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
+import { OrganizationsPage } from "@/pages/OrganizationsPage";
+import { UserManagementPage } from "@/pages/UserManagementPage";
+import { PatientsPage } from "@/pages/PatientsPage";
+import { PractitionersPage } from "@/pages/PractitionersPage";
+import { AppointmentsPage } from "@/pages/AppointmentsPage";
 import { Dashboard } from "@/pages/Dashboard";
 import { AIHub } from "@/pages/AIHub";
 import NotFound from "./pages/NotFound";
@@ -77,35 +82,35 @@ const App = () => (
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Organizations page coming soon...</div>} />
+                <Route index element={<OrganizationsPage />} />
               </Route>
               <Route path="/users" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">User Management page coming soon...</div>} />
+                <Route index element={<UserManagementPage />} />
               </Route>
               <Route path="/patients" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Patient Management page coming soon...</div>} />
+                <Route index element={<PatientsPage />} />
               </Route>
               <Route path="/practitioners" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Practitioner Management page coming soon...</div>} />
+                <Route index element={<PractitionersPage />} />
               </Route>
               <Route path="/appointments" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Appointments page coming soon...</div>} />
+                <Route index element={<AppointmentsPage />} />
               </Route>
               <Route path="/encounters" element={
                 <ProtectedRoute>
