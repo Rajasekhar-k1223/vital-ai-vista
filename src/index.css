@@ -164,10 +164,6 @@
     background: var(--gradient-hero);
   }
 
-  .card-elevated {
-    box-shadow: var(--shadow-elevated);
-  }
-
   .transition-medical {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -176,7 +172,7 @@
 @layer components {
   /* Medical UI Components */
   .medical-card {
-    @apply bg-card border border-border rounded-lg p-6 shadow-sm transition-medical hover:shadow-elevated;
+    @apply bg-card border border-border rounded-lg p-6 shadow-sm transition-medical hover:shadow-lg;
   }
 
   .medical-button {

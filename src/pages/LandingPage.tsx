@@ -150,7 +150,7 @@ export function LandingPage() {
               <img 
                 src={heroBanner} 
                 alt="Healthcare professionals using VitalAI platform"
-                className="relative rounded-2xl w-full h-auto shadow-2xl card-elevated"
+                className="relative rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ export function LandingPage() {
             {features.map((feature, index) => {
               const Icon = feature.icon
               return (
-                <Card key={index} className="medical-card group hover:shadow-medical">
+                <Card key={index} className="medical-card group hover:shadow-xl">
                   <CardHeader>
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <Icon className="h-6 w-6 text-primary" />
@@ -202,7 +202,7 @@ export function LandingPage() {
               <img 
                 src={aiAnalytics} 
                 alt="AI Analytics Dashboard"
-                className="rounded-2xl w-full h-auto shadow-2xl card-elevated"
+                className="rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl"></div>
             </div>
