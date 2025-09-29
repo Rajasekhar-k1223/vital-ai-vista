@@ -15,7 +15,16 @@ import { PractitionersPage } from "@/pages/PractitionersPage";
 import { AppointmentsPage } from "@/pages/AppointmentsPage";
 import { Dashboard } from "@/pages/Dashboard";
 import { AIHub } from "@/pages/AIHub";
-import NotFound from "./pages/NotFound";
+import { EncountersPage } from '@/pages/EncountersPage'
+import { ObservationsPage } from '@/pages/ObservationsPage'
+import { MedicationsPage } from '@/pages/MedicationsPage'
+import { ImmunizationsPage } from '@/pages/ImmunizationsPage'
+import { CarePlansPage } from '@/pages/CarePlansPage'
+import { DiagnosticsPage } from '@/pages/DiagnosticsPage'
+import { BillingPage } from '@/pages/BillingPage'
+import { ConsentPage } from '@/pages/ConsentPage'
+import { TerminologyPage } from '@/pages/TerminologyPage'
+import { NotFound } from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
