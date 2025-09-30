@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { ArrowRight, Shield, Brain, Users, BarChart3, CheckCircle, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -6,9 +5,18 @@ import { Badge } from '@/components/ui/badge'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/components/AuthContext'
 import { useNavigate } from 'react-router-dom'
-import logo from '@/assets/logo.png'
-import heroBanner from '@/assets/hero-banner.jpg'
-import aiAnalytics from '@/assets/ai-analytics.jpg'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay"
+import logo from '@/assets/vitalai-logo.png'
+import healthcareDashboard from '@/assets/healthcare-dashboard.jpg'
+import healthcareTeam from '@/assets/healthcare-team.jpg'
+import patientCare from '@/assets/patient-care.jpg'
 
 const features = [
   {
@@ -68,7 +76,7 @@ export function LandingPage() {
       <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border">
         <div className="container mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={logo} alt="VitalAI" className="h-8 w-8" />
+            <img src={logo} alt="VitalAI" className="h-10 w-10" />
             <div className="flex flex-col">
               <h1 className="text-xl font-bold text-primary">VitalAI</h1>
               <p className="text-xs text-muted-foreground hidden sm:block">Healthcare Intelligence</p>
@@ -78,7 +86,7 @@ export function LandingPage() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             {user ? (
-              <Button onClick={() => navigate('/dashboard')} className="medical-button">
+              <Button onClick={() => navigate('/dashboard')} className="medical-button hover-scale">
                 Dashboard
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -87,7 +95,7 @@ export function LandingPage() {
                 <Button variant="outline" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
-                <Button onClick={() => navigate('/login')} className="medical-button">
+                <Button onClick={() => navigate('/login')} className="medical-button hover-scale">
                   Get Started
                 </Button>
               </div>
@@ -96,12 +104,12 @@ export function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section with Carousel */}
       <section className="relative overflow-hidden py-20 lg:py-32">
         <div className="absolute inset-0 hero-gradient opacity-5"></div>
         <div className="container mx-auto px-4 lg:px-6 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="space-y-6 animate-fade-in">
               <div className="space-y-2">
                 <Badge variant="outline" className="w-fit">
                   🚀 AI-Powered Healthcare Platform
@@ -120,11 +128,11 @@ export function LandingPage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" onClick={handleGetStarted} className="medical-button">
+                <Button size="lg" onClick={handleGetStarted} className="medical-button hover-scale">
                   Get Started Today
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" className="hover-scale">
                   Watch Demo
                 </Button>
               </div>
@@ -145,13 +153,50 @@ export function LandingPage() {
               </div>
             </div>
             
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl transform rotate-3"></div>
-              <img 
-                src={heroBanner} 
-                alt="Healthcare professionals using VitalAI platform"
-                className="relative rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
-              />
+            <div className="relative animate-fade-in">
+              <Carousel
+                plugins={[
+                  Autoplay({
+                    delay: 4000,
+                  }),
+                ]}
+                className="w-full"
+              >
+                <CarouselContent>
+                  <CarouselItem>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl transform rotate-3"></div>
+                      <img 
+                        src={healthcareDashboard} 
+                        alt="Healthcare Dashboard with AI Analytics"
+                        className="relative rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
+                      />
+                    </div>
+                  </CarouselItem>
+                  <CarouselItem>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-2xl transform -rotate-3"></div>
+                      <img 
+                        src={healthcareTeam} 
+                        alt="Healthcare Team Collaboration"
+                        className="relative rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
+                      />
+                    </div>
+                  </CarouselItem>
+                  <CarouselItem>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl transform rotate-3"></div>
+                      <img 
+                        src={patientCare} 
+                        alt="Personalized Patient Care"
+                        className="relative rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
+                      />
+                    </div>
+                  </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious className="hidden lg:flex" />
+                <CarouselNext className="hidden lg:flex" />
+              </Carousel>
             </div>
           </div>
         </div>
@@ -160,7 +205,7 @@ export function LandingPage() {
       {/* Features Section */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-6">
-          <div className="text-center space-y-4 mb-16">
+          <div className="text-center space-y-4 mb-16 animate-fade-in">
             <Badge variant="outline" className="w-fit">Features</Badge>
             <h2 className="text-3xl lg:text-4xl font-bold">
               Comprehensive Healthcare Intelligence
@@ -175,7 +220,7 @@ export function LandingPage() {
             {features.map((feature, index) => {
               const Icon = feature.icon
               return (
-                <Card key={index} className="medical-card group hover:shadow-xl">
+                <Card key={index} className="medical-card group hover:shadow-xl animate-fade-in hover-scale" style={{ animationDelay: `${index * 100}ms` }}>
                   <CardHeader>
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <Icon className="h-6 w-6 text-primary" />
@@ -198,16 +243,16 @@ export function LandingPage() {
       <section className="py-20">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative order-2 lg:order-1">
+            <div className="relative order-2 lg:order-1 animate-fade-in">
               <img 
-                src={aiAnalytics} 
+                src={healthcareDashboard} 
                 alt="AI Analytics Dashboard"
-                className="rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300"
+                className="rounded-2xl w-full h-auto shadow-2xl hover:shadow-xl transition-all duration-300 hover-scale"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl"></div>
             </div>
             
-            <div className="space-y-6 order-1 lg:order-2">
+            <div className="space-y-6 order-1 lg:order-2 animate-fade-in">
               <Badge variant="outline" className="w-fit">
                 🧠 AI Intelligence
               </Badge>
@@ -235,7 +280,7 @@ export function LandingPage() {
                 </div>
               </div>
               
-              <Button size="lg" className="medical-button">
+              <Button size="lg" className="medical-button hover-scale">
                 Explore AI Features
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -247,7 +292,7 @@ export function LandingPage() {
       {/* Testimonials */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-6">
-          <div className="text-center space-y-4 mb-16">
+          <div className="text-center space-y-4 mb-16 animate-fade-in">
             <Badge variant="outline" className="w-fit">Testimonials</Badge>
             <h2 className="text-3xl lg:text-4xl font-bold">
               Trusted by Healthcare Leaders
@@ -256,7 +301,7 @@ export function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="medical-card">
+              <Card key={index} className="medical-card animate-fade-in hover-scale" style={{ animationDelay: `${index * 100}ms` }}>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
@@ -283,7 +328,7 @@ export function LandingPage() {
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 hero-gradient opacity-10"></div>
         <div className="container mx-auto px-4 lg:px-6 relative">
-          <div className="text-center space-y-6 max-w-3xl mx-auto">
+          <div className="text-center space-y-6 max-w-3xl mx-auto animate-fade-in">
             <h2 className="text-3xl lg:text-4xl font-bold">
               Ready to Transform Your Healthcare Organization?
             </h2>
@@ -292,11 +337,11 @@ export function LandingPage() {
               better patient outcomes through intelligent healthcare solutions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={handleGetStarted} className="medical-button">
+              <Button size="lg" onClick={handleGetStarted} className="medical-button hover-scale">
                 Start Your Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" className="hover-scale">
                 Schedule a Demo
               </Button>
             </div>
@@ -309,7 +354,7 @@ export function LandingPage() {
         <div className="container mx-auto px-4 lg:px-6 py-12">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="VitalAI" className="h-6 w-6" />
+              <img src={logo} alt="VitalAI" className="h-8 w-8" />
               <span className="font-semibold text-primary">VitalAI</span>
               <span className="text-muted-foreground">Healthcare Intelligence Platform</span>
             </div>
