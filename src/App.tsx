@@ -126,63 +126,63 @@ const App = () => (
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Encounters page coming soon...</div>} />
+                <Route index element={<EncountersPage />} />
               </Route>
               <Route path="/observations" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Observations page coming soon...</div>} />
+                <Route index element={<ObservationsPage />} />
               </Route>
               <Route path="/medications" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Medications page coming soon...</div>} />
+                <Route index element={<MedicationsPage />} />
               </Route>
               <Route path="/immunizations" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Immunizations page coming soon...</div>} />
+                <Route index element={<ImmunizationsPage />} />
               </Route>
               <Route path="/care-plans" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Care Plans page coming soon...</div>} />
+                <Route index element={<CarePlansPage />} />
               </Route>
               <Route path="/diagnostics" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Diagnostics page coming soon...</div>} />
+                <Route index element={<DiagnosticsPage />} />
               </Route>
               <Route path="/billing" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Billing page coming soon...</div>} />
+                <Route index element={<BillingPage />} />
               </Route>
               <Route path="/consent" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Consent page coming soon...</div>} />
+                <Route index element={<ConsentPage />} />
               </Route>
               <Route path="/terminology" element={
                 <ProtectedRoute>
                   <Layout />
                 </ProtectedRoute>
               }>
-                <Route index element={<div className="p-6 text-center">Terminology page coming soon...</div>} />
+                <Route index element={<TerminologyPage />} />
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

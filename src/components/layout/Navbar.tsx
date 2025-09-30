@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/components/AuthContext'
 import { getRoleDisplayName } from '@/lib/auth'
-import logo from '@/assets/logo.png'
+import logo from '@/assets/vitalai-logo.png'
 
 interface NavbarProps {
   onMenuClick?: () => void
