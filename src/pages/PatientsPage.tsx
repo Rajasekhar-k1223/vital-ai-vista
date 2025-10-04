@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus, Search, Users, Calendar, Heart, Eye, Edit, FileText, Phone, Mail, User } from 'lucide-react'
+import { Plus, Search, Users, Calendar, Heart, Eye, Edit, FileText, Phone, Mail, User, Activity } from 'lucide-react'
+import { MedicalReportsTab } from '@/components/patients/MedicalReportsTab'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -357,18 +358,29 @@ export function PatientsPage() {
         </Card>
       )}
 
-      {/* Patients Table */}
-      <Card className="medical-card">
-        <CardHeader>
-          <CardTitle>{user?.role === 'patient' ? 'Your Information' : 'Patients'}</CardTitle>
-          <CardDescription>
-            {user?.role === 'patient' 
-              ? 'Your medical record and health information'
-              : 'Patient records and medical information'
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Main Content with Tabs */}
+      <Tabs defaultValue="patients" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsTrigger value="patients">Patient Records</TabsTrigger>
+          <TabsTrigger value="reports">
+            <Activity className="h-4 w-4 mr-2" />
+            Medical Reports
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="patients" className="space-y-6">
+          {/* Patients Table */}
+          <Card className="medical-card">
+            <CardHeader>
+              <CardTitle>{user?.role === 'patient' ? 'Your Information' : 'Patients'}</CardTitle>
+              <CardDescription>
+                {user?.role === 'patient' 
+                  ? 'Your medical record and health information'
+                  : 'Patient records and medical information'
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
@@ -466,6 +478,12 @@ export function PatientsPage() {
           </Table>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="reports">
+          <MedicalReportsTab patientId={user?.id || '1'} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
