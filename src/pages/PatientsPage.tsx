@@ -11,73 +11,102 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/components/AuthContext'
+import type { Patient } from '@/types/fhir/Patient'
+import { 
+  createHumanName, 
+  createContactPoint, 
+  createAddress, 
+  createIdentifier, 
+  getDisplayName, 
+  getContactValue, 
+  getAddressText,
+  getIdentifierValue,
+  CODING_SYSTEMS
+} from '@/lib/fhir-utils'
 
-interface Patient {
-  id: string
-  mrn: string
-  name: string
-  email: string
-  phone: string
-  dateOfBirth: string
-  gender: string
-  address: string
-  emergencyContact: string
-  primaryPhysician: string
+// Extended Patient interface with custom fields for UI
+interface PatientExtended extends Patient {
   lastVisit: Date
   nextAppointment?: Date
-  status: 'active' | 'inactive' | 'discharged'
   riskLevel: 'low' | 'medium' | 'high'
   organizationId: string
 }
 
-const mockPatients: Patient[] = [
+const mockPatients: PatientExtended[] = [
   {
+    resourceType: 'Patient',
     id: '1',
-    mrn: 'MRN001234',
-    name: 'John Anderson',
-    email: 'john.anderson@email.com',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1985-03-15',
-    gender: 'Male',
-    address: '123 Main St, City, State 12345',
-    emergencyContact: 'Jane Anderson +1 (555) 987-6543',
-    primaryPhysician: 'Dr. Michael Chen',
+    identifier: [
+      createIdentifier(CODING_SYSTEMS.MRN, 'MRN001234', 'official')
+    ],
+    active: true,
+    name: [createHumanName('Anderson', 'John', 'official')],
+    telecom: [
+      createContactPoint('email', 'john.anderson@email.com', 'home'),
+      createContactPoint('phone', '+1 (555) 123-4567', 'mobile')
+    ],
+    gender: 'male',
+    birthDate: '1985-03-15',
+    address: [createAddress('123 Main St', 'City', 'State', '12345')],
+    contact: [{
+      relationship: [{ text: 'Emergency Contact' }],
+      name: createHumanName('Anderson', 'Jane'),
+      telecom: [createContactPoint('phone', '+1 (555) 987-6543', 'home')]
+    }],
+    generalPractitioner: [{ display: 'Dr. Michael Chen' }],
     lastVisit: new Date('2024-01-10T14:30:00'),
     nextAppointment: new Date('2024-01-20T10:00:00'),
-    status: 'active',
     riskLevel: 'low',
     organizationId: 'org-1'
   },
   {
+    resourceType: 'Patient',
     id: '2',
-    mrn: 'MRN001235',
-    name: 'Sarah Wilson',
-    email: 'sarah.wilson@email.com',
-    phone: '+1 (555) 234-5678',
-    dateOfBirth: '1992-07-22',
-    gender: 'Female',
-    address: '456 Oak Ave, City, State 12345',
-    emergencyContact: 'Robert Wilson +1 (555) 876-5432',
-    primaryPhysician: 'Dr. Sarah Johnson',
+    identifier: [
+      createIdentifier(CODING_SYSTEMS.MRN, 'MRN001235', 'official')
+    ],
+    active: true,
+    name: [createHumanName('Wilson', 'Sarah', 'official')],
+    telecom: [
+      createContactPoint('email', 'sarah.wilson@email.com', 'home'),
+      createContactPoint('phone', '+1 (555) 234-5678', 'mobile')
+    ],
+    gender: 'female',
+    birthDate: '1992-07-22',
+    address: [createAddress('456 Oak Ave', 'City', 'State', '12345')],
+    contact: [{
+      relationship: [{ text: 'Emergency Contact' }],
+      name: createHumanName('Wilson', 'Robert'),
+      telecom: [createContactPoint('phone', '+1 (555) 876-5432', 'home')]
+    }],
+    generalPractitioner: [{ display: 'Dr. Sarah Johnson' }],
     lastVisit: new Date('2024-01-12T09:15:00'),
-    status: 'active',
     riskLevel: 'medium',
     organizationId: 'org-1'
   },
   {
+    resourceType: 'Patient',
     id: '3',
-    mrn: 'MRN001236',
-    name: 'Michael Johnson',
-    email: 'michael.johnson@email.com',
-    phone: '+1 (555) 345-6789',
-    dateOfBirth: '1978-11-08',
-    gender: 'Male',
-    address: '789 Pine Rd, City, State 12345',
-    emergencyContact: 'Lisa Johnson +1 (555) 765-4321',
-    primaryPhysician: 'Dr. Robert Wilson',
+    identifier: [
+      createIdentifier(CODING_SYSTEMS.MRN, 'MRN001236', 'official')
+    ],
+    active: true,
+    name: [createHumanName('Johnson', 'Michael', 'official')],
+    telecom: [
+      createContactPoint('email', 'michael.johnson@email.com', 'home'),
+      createContactPoint('phone', '+1 (555) 345-6789', 'mobile')
+    ],
+    gender: 'male',
+    birthDate: '1978-11-08',
+    address: [createAddress('789 Pine Rd', 'City', 'State', '12345')],
+    contact: [{
+      relationship: [{ text: 'Emergency Contact' }],
+      name: createHumanName('Johnson', 'Lisa'),
+      telecom: [createContactPoint('phone', '+1 (555) 765-4321', 'home')]
+    }],
+    generalPractitioner: [{ display: 'Dr. Robert Wilson' }],
     lastVisit: new Date('2024-01-08T16:45:00'),
     nextAppointment: new Date('2024-01-25T14:30:00'),
-    status: 'active',
     riskLevel: 'high',
     organizationId: 'org-2'
   }
@@ -110,21 +139,25 @@ export function PatientsPage() {
 
     if (user?.role === 'patient') {
       // Patients can only see their own record
-      filteredPatients = patients.filter(p => p.email === user.email)
+      filteredPatients = patients.filter(p => getContactValue(p.telecom, 'email') === user.email)
     }
 
     // Apply search filter
     if (searchTerm) {
       filteredPatients = filteredPatients.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.mrn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.email.toLowerCase().includes(searchTerm.toLowerCase())
+        getDisplayName(p.name).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getIdentifierValue(p.identifier, CODING_SYSTEMS.MRN).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getContactValue(p.telecom, 'email').toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filteredPatients = filteredPatients.filter(p => p.status === statusFilter)
+      filteredPatients = filteredPatients.filter(p => 
+        statusFilter === 'active' ? p.active === true :
+        statusFilter === 'inactive' ? p.active === false :
+        false
+      )
     }
 
     // Apply risk filter
@@ -282,12 +315,12 @@ export function PatientsPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="medical-card">
+                <Card className="medical-card">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Active Patients</p>
-                <p className="text-2xl font-bold">{filteredPatients.filter(p => p.status === 'active').length}</p>
+                <p className="text-2xl font-bold">{filteredPatients.filter(p => p.active === true).length}</p>
               </div>
               <Badge className="status-active">Active</Badge>
             </div>
@@ -403,30 +436,30 @@ export function PatientsPage() {
                         <User className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium">{patient.name}</p>
+                        <p className="font-medium">{getDisplayName(patient.name)}</p>
                         <p className="text-sm text-muted-foreground">
-                          Born: {new Date(patient.dateOfBirth).toLocaleDateString()}
+                          Born: {patient.birthDate ? new Date(patient.birthDate).toLocaleDateString() : 'N/A'}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{patient.mrn}</Badge>
+                    <Badge variant="outline">{getIdentifierValue(patient.identifier, CODING_SYSTEMS.MRN)}</Badge>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
                       <div className="flex items-center gap-1 text-sm">
                         <Phone className="h-3 w-3" />
-                        {patient.phone}
+                        {getContactValue(patient.telecom, 'phone')}
                       </div>
                       <div className="flex items-center gap-1 text-sm">
                         <Mail className="h-3 w-3" />
-                        {patient.email}
+                        {getContactValue(patient.telecom, 'email')}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-sm">{patient.primaryPhysician}</p>
+                    <p className="text-sm">{patient.generalPractitioner?.[0]?.display || 'N/A'}</p>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1 text-sm">
@@ -451,8 +484,8 @@ export function PatientsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={patient.status === 'active' ? "status-active" : "status-inactive"}>
-                      {patient.status}
+                    <Badge className={patient.active ? "status-active" : "status-inactive"}>
+                      {patient.active ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
                   <TableCell>

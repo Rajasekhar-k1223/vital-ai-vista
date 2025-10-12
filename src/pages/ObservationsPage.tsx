@@ -10,92 +10,107 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/components/AuthContext'
-
-interface Observation {
-  id: string
-  patientName: string
-  patientId: string
-  type: string
-  value: string
-  unit: string
-  status: 'final' | 'preliminary' | 'amended'
-  category: string
-  date: Date
-  practitionerName: string
-  normalRange?: string
-  isAbnormal: boolean
-}
+import type { Observation } from '@/types/fhir/Observation'
+import { 
+  createCodeableConcept,
+  getCodeDisplay,
+  getStatusColor,
+  CODING_SYSTEMS,
+  LOINC_CODES
+} from '@/lib/fhir-utils'
 
 const mockObservations: Observation[] = [
   {
+    resourceType: 'Observation',
     id: '1',
-    patientName: 'John Smith',
-    patientId: 'P001',
-    type: 'Blood Pressure',
-    value: '120/80',
-    unit: 'mmHg',
     status: 'final',
-    category: 'vital-signs',
-    date: new Date('2024-01-15T10:30:00'),
-    practitionerName: 'Dr. Sarah Johnson',
-    normalRange: '90-140 / 60-90',
-    isAbnormal: false
+    category: [{
+      coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs', display: 'Vital Signs' }],
+      text: 'Vital Signs'
+    }],
+    code: createCodeableConcept(CODING_SYSTEMS.LOINC, LOINC_CODES.BLOOD_PRESSURE, 'Blood Pressure'),
+    subject: { reference: 'Patient/P001', display: 'John Smith' },
+    effectiveDateTime: '2024-01-15T10:30:00Z',
+    issued: '2024-01-15T10:30:00Z',
+    performer: [{ display: 'Dr. Sarah Johnson' }],
+    component: [
+      {
+        code: createCodeableConcept(CODING_SYSTEMS.LOINC, LOINC_CODES.SYSTOLIC_BP, 'Systolic BP'),
+        valueQuantity: { value: 120, unit: 'mmHg', system: CODING_SYSTEMS.UCUM, code: 'mm[Hg]' }
+      },
+      {
+        code: createCodeableConcept(CODING_SYSTEMS.LOINC, LOINC_CODES.DIASTOLIC_BP, 'Diastolic BP'),
+        valueQuantity: { value: 80, unit: 'mmHg', system: CODING_SYSTEMS.UCUM, code: 'mm[Hg]' }
+      }
+    ],
+    referenceRange: [{ low: { value: 90 }, high: { value: 140 }, text: '90-140 / 60-90' }]
   },
   {
+    resourceType: 'Observation',
     id: '2',
-    patientName: 'Emily Davis',
-    patientId: 'P002',
-    type: 'Blood Glucose',
-    value: '180',
-    unit: 'mg/dL',
     status: 'final',
-    category: 'laboratory',
-    date: new Date('2024-01-15T09:15:00'),
-    practitionerName: 'Dr. Michael Chen',
-    normalRange: '70-100',
-    isAbnormal: true
+    category: [{
+      coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'laboratory', display: 'Laboratory' }],
+      text: 'Laboratory'
+    }],
+    code: createCodeableConcept(CODING_SYSTEMS.LOINC, LOINC_CODES.GLUCOSE, 'Blood Glucose'),
+    subject: { reference: 'Patient/P002', display: 'Emily Davis' },
+    effectiveDateTime: '2024-01-15T09:15:00Z',
+    issued: '2024-01-15T09:15:00Z',
+    performer: [{ display: 'Dr. Michael Chen' }],
+    valueQuantity: { value: 180, unit: 'mg/dL', system: CODING_SYSTEMS.UCUM, code: 'mg/dL' },
+    referenceRange: [{ low: { value: 70 }, high: { value: 100 }, text: '70-100' }],
+    interpretation: [{ text: 'Abnormal' }]
   },
   {
+    resourceType: 'Observation',
     id: '3',
-    patientName: 'Robert Wilson',
-    patientId: 'P003',
-    type: 'Heart Rate',
-    value: '72',
-    unit: 'bpm',
     status: 'final',
-    category: 'vital-signs',
-    date: new Date('2024-01-14T14:20:00'),
-    practitionerName: 'Dr. Lisa Anderson',
-    normalRange: '60-100',
-    isAbnormal: false
+    category: [{
+      coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs', display: 'Vital Signs' }],
+      text: 'Vital Signs'
+    }],
+    code: createCodeableConcept(CODING_SYSTEMS.LOINC, LOINC_CODES.HEART_RATE, 'Heart Rate'),
+    subject: { reference: 'Patient/P003', display: 'Robert Wilson' },
+    effectiveDateTime: '2024-01-14T14:20:00Z',
+    issued: '2024-01-14T14:20:00Z',
+    performer: [{ display: 'Dr. Lisa Anderson' }],
+    valueQuantity: { value: 72, unit: 'bpm', system: CODING_SYSTEMS.UCUM, code: '/min' },
+    referenceRange: [{ low: { value: 60 }, high: { value: 100 }, text: '60-100' }]
   },
   {
+    resourceType: 'Observation',
     id: '4',
-    patientName: 'John Smith',
-    patientId: 'P001',
-    type: 'Temperature',
-    value: '99.2',
-    unit: '°F',
     status: 'final',
-    category: 'vital-signs',
-    date: new Date('2024-01-15T10:30:00'),
-    practitionerName: 'Dr. Sarah Johnson',
-    normalRange: '97.8-99.1',
-    isAbnormal: true
+    category: [{
+      coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs', display: 'Vital Signs' }],
+      text: 'Vital Signs'
+    }],
+    code: createCodeableConcept(CODING_SYSTEMS.LOINC, LOINC_CODES.BODY_TEMPERATURE, 'Temperature'),
+    subject: { reference: 'Patient/P001', display: 'John Smith' },
+    effectiveDateTime: '2024-01-15T10:30:00Z',
+    issued: '2024-01-15T10:30:00Z',
+    performer: [{ display: 'Dr. Sarah Johnson' }],
+    valueQuantity: { value: 99.2, unit: '°F', system: CODING_SYSTEMS.UCUM, code: '[degF]' },
+    referenceRange: [{ low: { value: 97.8 }, high: { value: 99.1 }, text: '97.8-99.1' }],
+    interpretation: [{ text: 'Abnormal' }]
   },
   {
+    resourceType: 'Observation',
     id: '5',
-    patientName: 'Emily Davis',
-    patientId: 'P002',
-    type: 'Cholesterol Total',
-    value: '220',
-    unit: 'mg/dL',
     status: 'final',
-    category: 'laboratory',
-    date: new Date('2024-01-14T08:00:00'),
-    practitionerName: 'Dr. Michael Chen',
-    normalRange: '< 200',
-    isAbnormal: true
+    category: [{
+      coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'laboratory', display: 'Laboratory' }],
+      text: 'Laboratory'
+    }],
+    code: createCodeableConcept(CODING_SYSTEMS.LOINC, '2093-3', 'Cholesterol Total'),
+    subject: { reference: 'Patient/P002', display: 'Emily Davis' },
+    effectiveDateTime: '2024-01-14T08:00:00Z',
+    issued: '2024-01-14T08:00:00Z',
+    performer: [{ display: 'Dr. Michael Chen' }],
+    valueQuantity: { value: 220, unit: 'mg/dL', system: CODING_SYSTEMS.UCUM, code: 'mg/dL' },
+    referenceRange: [{ high: { value: 200 }, text: '< 200' }],
+    interpretation: [{ text: 'Abnormal' }]
   }
 ]
 
@@ -117,19 +132,21 @@ export function ObservationsPage() {
     let filteredObservations = observations
 
     if (user?.role === 'patient') {
-      filteredObservations = observations.filter(o => o.patientId === 'P001') // Current patient
+      filteredObservations = observations.filter(o => o.subject?.reference === 'Patient/P001')
     }
 
     if (searchTerm) {
       filteredObservations = filteredObservations.filter(o =>
-        o.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.practitionerName.toLowerCase().includes(searchTerm.toLowerCase())
+        o.subject?.display?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getCodeDisplay(o.code).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        o.performer?.[0]?.display?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     if (categoryFilter !== 'all') {
-      filteredObservations = filteredObservations.filter(o => o.category === categoryFilter)
+      filteredObservations = filteredObservations.filter(o => 
+        o.category?.[0]?.coding?.[0]?.code === categoryFilter
+      )
     }
 
     return filteredObservations
@@ -142,8 +159,9 @@ export function ObservationsPage() {
   }
 
   const filteredObservations = getFilteredObservations()
-  const vitalSigns = filteredObservations.filter(o => o.category === 'vital-signs')
-  const labResults = filteredObservations.filter(o => o.category === 'laboratory')
+  const vitalSigns = filteredObservations.filter(o => o.category?.[0]?.coding?.[0]?.code === 'vital-signs')
+  const labResults = filteredObservations.filter(o => o.category?.[0]?.coding?.[0]?.code === 'laboratory')
+  const isAbnormal = (obs: Observation) => obs.interpretation?.some(i => i.text === 'Abnormal')
 
   return (
     <div className="space-y-6">
@@ -299,7 +317,7 @@ export function ObservationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Abnormal</p>
-                <p className="text-2xl font-bold">{filteredObservations.filter(o => o.isAbnormal).length}</p>
+                <p className="text-2xl font-bold">{filteredObservations.filter(isAbnormal).length}</p>
               </div>
               <TrendingUp className="h-4 w-4 text-warning" />
             </div>
@@ -368,37 +386,42 @@ export function ObservationsPage() {
                   {filteredObservations.map((obs) => (
                     <TableRow key={obs.id}>
                       <TableCell>
-                        <div className="font-medium">{obs.patientName}</div>
-                        <div className="text-sm text-muted-foreground">ID: {obs.patientId}</div>
+                        <div className="font-medium">{obs.subject?.display || 'Unknown'}</div>
+                        <div className="text-sm text-muted-foreground">ID: {obs.subject?.reference?.split('/')[1] || 'N/A'}</div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {obs.type === 'Blood Pressure' && <Heart className="h-4 w-4 text-error" />}
-                          {obs.type === 'Temperature' && <Thermometer className="h-4 w-4 text-warning" />}
-                          {obs.type === 'Weight' && <Scale className="h-4 w-4 text-info" />}
-                          {obs.type === 'Heart Rate' && <Activity className="h-4 w-4 text-success" />}
-                          <span className="font-medium">{obs.type}</span>
+                          {getCodeDisplay(obs.code).includes('Pressure') && <Heart className="h-4 w-4 text-error" />}
+                          {getCodeDisplay(obs.code).includes('Temperature') && <Thermometer className="h-4 w-4 text-warning" />}
+                          {getCodeDisplay(obs.code).includes('Weight') && <Scale className="h-4 w-4 text-info" />}
+                          {getCodeDisplay(obs.code).includes('Heart') && <Activity className="h-4 w-4 text-success" />}
+                          <span className="font-medium">{getCodeDisplay(obs.code)}</span>
                         </div>
-                        <Badge variant="outline" className="mt-1">{obs.category}</Badge>
+                        <Badge variant="outline" className="mt-1">{obs.category?.[0]?.text || 'Unknown'}</Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium">{obs.value} {obs.unit}</div>
-                        {obs.isAbnormal && (
+                        <div className="font-medium">
+                          {obs.component ? 
+                            `${obs.component[0]?.valueQuantity?.value}/${obs.component[1]?.valueQuantity?.value} ${obs.component[0]?.valueQuantity?.unit}` :
+                            `${obs.valueQuantity?.value} ${obs.valueQuantity?.unit}`
+                          }
+                        </div>
+                        {isAbnormal(obs) && (
                           <Badge className="status-critical mt-1">Abnormal</Badge>
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-muted-foreground">{obs.normalRange}</span>
+                        <span className="text-sm text-muted-foreground">{obs.referenceRange?.[0]?.text || 'N/A'}</span>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm">{obs.date.toLocaleDateString()}</div>
-                        <div className="text-sm text-muted-foreground">{obs.date.toLocaleTimeString()}</div>
+                        <div className="text-sm">{obs.effectiveDateTime ? new Date(obs.effectiveDateTime).toLocaleDateString() : 'N/A'}</div>
+                        <div className="text-sm text-muted-foreground">{obs.effectiveDateTime ? new Date(obs.effectiveDateTime).toLocaleTimeString() : ''}</div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">{obs.practitionerName}</span>
+                        <span className="text-sm">{obs.performer?.[0]?.display || 'N/A'}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge className="status-active">{obs.status}</Badge>
+                        <Badge className={getStatusColor(obs.status)}>{obs.status}</Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -429,29 +452,84 @@ export function ObservationsPage() {
           <Card className="medical-card">
             <CardHeader>
               <CardTitle>Vital Signs</CardTitle>
-              <CardDescription>Patient vital signs and measurements</CardDescription>
+              <CardDescription>A summary of vital signs measurements</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                {vitalSigns.map((vital) => (
-                  <Card key={vital.id} className="medical-card">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Patient</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Normal Range</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Practitioner</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {vitalSigns.map((obs) => (
+                    <TableRow key={obs.id}>
+                      <TableCell>
+                        <div className="font-medium">{obs.subject?.display || 'Unknown'}</div>
+                        <div className="text-sm text-muted-foreground">ID: {obs.subject?.reference?.split('/')[1] || 'N/A'}</div>
+                      </TableCell>
+                      <TableCell>
                         <div className="flex items-center gap-2">
-                          {vital.type === 'Blood Pressure' && <Heart className="h-5 w-5 text-error" />}
-                          {vital.type === 'Temperature' && <Thermometer className="h-5 w-5 text-warning" />}
-                          {vital.type === 'Heart Rate' && <Activity className="h-5 w-5 text-success" />}
-                          <span className="font-medium">{vital.type}</span>
+                          {getCodeDisplay(obs.code).includes('Pressure') && <Heart className="h-4 w-4 text-error" />}
+                          {getCodeDisplay(obs.code).includes('Temperature') && <Thermometer className="h-4 w-4 text-warning" />}
+                          {getCodeDisplay(obs.code).includes('Weight') && <Scale className="h-4 w-4 text-info" />}
+                          {getCodeDisplay(obs.code).includes('Heart') && <Activity className="h-4 w-4 text-success" />}
+                          <span className="font-medium">{getCodeDisplay(obs.code)}</span>
                         </div>
-                        {vital.isAbnormal && <Badge className="status-critical">!</Badge>}
-                      </div>
-                      <div className="text-2xl font-bold">{vital.value} {vital.unit}</div>
-                      <div className="text-sm text-muted-foreground">Normal: {vital.normalRange}</div>
-                      <div className="text-sm text-muted-foreground mt-2">{vital.patientName}</div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                        <Badge variant="outline" className="mt-1">{obs.category?.[0]?.text || 'Unknown'}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">
+                          {obs.component ? 
+                            `${obs.component[0]?.valueQuantity?.value}/${obs.component[1]?.valueQuantity?.value} ${obs.component[0]?.valueQuantity?.unit}` :
+                            `${obs.valueQuantity?.value} ${obs.valueQuantity?.unit}`
+                          }
+                        </div>
+                        {isAbnormal(obs) && (
+                          <Badge className="status-critical mt-1">Abnormal</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">{obs.referenceRange?.[0]?.text || 'N/A'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">{obs.effectiveDateTime ? new Date(obs.effectiveDateTime).toLocaleDateString() : 'N/A'}</div>
+                        <div className="text-sm text-muted-foreground">{obs.effectiveDateTime ? new Date(obs.effectiveDateTime).toLocaleTimeString() : ''}</div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{obs.performer?.[0]?.display || 'N/A'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(obs.status)}>{obs.status}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button size="sm" variant="outline">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          {user?.role !== 'patient' && (
+                            <>
+                              <Button size="sm" variant="outline">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button size="sm" variant="outline">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>
@@ -459,36 +537,77 @@ export function ObservationsPage() {
         <TabsContent value="labs" className="space-y-4">
           <Card className="medical-card">
             <CardHeader>
-              <CardTitle>Laboratory Results</CardTitle>
-              <CardDescription>Blood work and laboratory test results</CardDescription>
+              <CardTitle>Lab Results</CardTitle>
+              <CardDescription>Detailed list of laboratory results and analysis</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Patient</TableHead>
-                    <TableHead>Test</TableHead>
-                    <TableHead>Result</TableHead>
-                    <TableHead>Reference Range</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Normal Range</TableHead>
                     <TableHead>Date</TableHead>
+                    <TableHead>Practitioner</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {labResults.map((lab) => (
-                    <TableRow key={lab.id}>
-                      <TableCell className="font-medium">{lab.patientName}</TableCell>
-                      <TableCell>{lab.type}</TableCell>
+                  {labResults.map((obs) => (
+                    <TableRow key={obs.id}>
+                      <TableCell>
+                        <div className="font-medium">{obs.subject?.display || 'Unknown'}</div>
+                        <div className="text-sm text-muted-foreground">ID: {obs.subject?.reference?.split('/')[1] || 'N/A'}</div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{lab.value} {lab.unit}</span>
-                          {lab.isAbnormal && <Badge className="status-critical">High</Badge>}
+                          {getCodeDisplay(obs.code).includes('Pressure') && <Heart className="h-4 w-4 text-error" />}
+                          {getCodeDisplay(obs.code).includes('Temperature') && <Thermometer className="h-4 w-4 text-warning" />}
+                          {getCodeDisplay(obs.code).includes('Weight') && <Scale className="h-4 w-4 text-info" />}
+                          {getCodeDisplay(obs.code).includes('Heart') && <Activity className="h-4 w-4 text-success" />}
+                          <span className="font-medium">{getCodeDisplay(obs.code)}</span>
                         </div>
+                        <Badge variant="outline" className="mt-1">{obs.category?.[0]?.text || 'Unknown'}</Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{lab.normalRange}</TableCell>
-                      <TableCell>{lab.date.toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge className="status-active">{lab.status}</Badge>
+                        <div className="font-medium">
+                          {obs.valueQuantity?.value} {obs.valueQuantity?.unit}
+                        </div>
+                        {isAbnormal(obs) && (
+                          <Badge className="status-critical mt-1">Abnormal</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">{obs.referenceRange?.[0]?.text || 'N/A'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">{obs.effectiveDateTime ? new Date(obs.effectiveDateTime).toLocaleDateString() : 'N/A'}</div>
+                        <div className="text-sm text-muted-foreground">{obs.effectiveDateTime ? new Date(obs.effectiveDateTime).toLocaleTimeString() : ''}</div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{obs.performer?.[0]?.display || 'N/A'}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(obs.status)}>{obs.status}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button size="sm" variant="outline">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          {user?.role !== 'patient' && (
+                            <>
+                              <Button size="sm" variant="outline">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button size="sm" variant="outline">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
