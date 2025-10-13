@@ -21,6 +21,15 @@ export const CODING_SYSTEMS = {
   NPI: 'http://hl7.org/fhir/sid/us-npi'
 };
 
+// ===== Common RxNorm Codes for Medications =====
+export const RXNORM_CODES = {
+  LISINOPRIL: '104375',
+  METFORMIN: '6809',
+  AMOXICILLIN: '723',
+  ATORVASTATIN: '83367',
+  LEVOTHYROXINE: '10582'
+};
+
 // ===== Common LOINC Codes for Observations =====
 export const LOINC_CODES = {
   BLOOD_PRESSURE: '85354-9',
