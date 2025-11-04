@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus, Search, Calendar, Clock, User, Phone, Mail, Eye, Edit, Check, X, MapPin } from 'lucide-react'
+import { Plus, Search, Calendar, Clock, User, Phone, Mail, Eye, Edit, Check, X, MapPin, Video } from 'lucide-react'
+import { VirtualAppointmentDialog } from '@/components/virtual/VirtualAppointmentDialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -100,6 +101,8 @@ export function AppointmentsPage() {
     location: '',
     notes: ''
   })
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
+  const [isVirtualDialogOpen, setIsVirtualDialogOpen] = useState(false)
 
   // Filter appointments based on user's role and organization
   const getFilteredAppointments = () => {
@@ -502,6 +505,19 @@ export function AppointmentsPage() {
                       <Button size="sm" variant="outline">
                         <Eye className="h-4 w-4" />
                       </Button>
+                      {(appointment.status === 'scheduled' || appointment.status === 'confirmed') && (
+                        <Button 
+                          size="sm" 
+                          className="medical-button"
+                          onClick={() => {
+                            setSelectedAppointment(appointment)
+                            setIsVirtualDialogOpen(true)
+                          }}
+                        >
+                          <Video className="h-4 w-4 mr-1" />
+                          Join
+                        </Button>
+                      )}
                       {canManageAppointments && (
                         <>
                           <Button size="sm" variant="outline">
@@ -522,6 +538,21 @@ export function AppointmentsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Virtual Appointment Dialog */}
+      {selectedAppointment && (
+        <VirtualAppointmentDialog
+          open={isVirtualDialogOpen}
+          onOpenChange={setIsVirtualDialogOpen}
+          appointmentId={selectedAppointment.id}
+          patientName={selectedAppointment.patientName}
+          practitionerName={selectedAppointment.practitionerName}
+          appointmentDate={selectedAppointment.date}
+          appointmentType={selectedAppointment.appointmentType}
+          currentUser={user?.role === 'patient' ? 'patient' : 'practitioner'}
+          currentUserName={user?.name || ''}
+        />
+      )}
     </div>
   )
 }
