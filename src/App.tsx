@@ -11,6 +11,7 @@ import { LoginPage } from "@/pages/auth/LoginPage";
 import { OrganizationsPage } from "@/pages/OrganizationsPage";
 import { UserManagementPage } from "@/pages/UserManagementPage";
 import { PatientsPage } from "@/pages/PatientsPage";
+import PatientDetailPage from "@/pages/PatientDetailPage";
 import { PractitionersPage } from "@/pages/PractitionersPage";
 import { AppointmentsPage } from "@/pages/AppointmentsPage";
 import { Dashboard } from "@/pages/Dashboard";
@@ -106,6 +107,7 @@ const App = () => (
                 </ProtectedRoute>
               }>
                 <Route index element={<PatientsPage />} />
+                <Route path=":patientId" element={<PatientDetailPage />} />
               </Route>
               <Route path="/practitioners" element={
                 <ProtectedRoute>

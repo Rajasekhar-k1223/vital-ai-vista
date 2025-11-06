@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus, Search, Users, Calendar, Heart, Eye, Edit, FileText, Phone, Mail, User, Activity } from 'lucide-react'
 import { MedicalReportsTab } from '@/components/patients/MedicalReportsTab'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -114,6 +115,7 @@ const mockPatients: PatientExtended[] = [
 
 export function PatientsPage() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [patients] = useState(mockPatients)
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -490,7 +492,11 @@ export function PatientsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => navigate(`/patients/${patient.id}`)}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       {canAddPatients && (
